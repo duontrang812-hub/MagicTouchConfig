@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>⚜️ AIMLOCK SUPPER VHAIDANG ULTIMATE ⚜️</title>
+<style>
+  html, body { margin:0; padding:0; overflow:hidden; height:100%; background:#000; }
+  canvas { position:absolute; top:0; left:0; z-index:0; }
+  .scene { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+  .card { width:320px; padding:30px; background:rgba(0,0,0,0.6); border:2px solid #00ffe7;
+          border-radius:15px; box-shadow:0 0 30px #00ffe7; backdrop-filter:blur(8px);
+          transform-style:preserve-3d; transition:transform 1s; }
+  .card.hide { transform: perspective(600px) rotateY(90deg); opacity:0; }
+  h1 { font-size:2.5em; color:#00ffe7; text-shadow:0 0 15px #00ffe7,0 0 30px #005eff; margin-bottom:20px;
+       animation:pulse 2s infinite; }
+  @keyframes pulse {
+    0%,100% { text-shadow:0 0 5px #00ffe7; }
+    50% { text-shadow:0 0 25px #00ffe7,0 0 50px #005eff; }
+  }
+  input { width:100%; padding:12px; margin:10px 0; font-size:16px;
+          border:2px solid #222; border-radius:8px; background:#111; color:#fff;
+          transition:0.3s; }
+  input:focus { border-color:#00ffe7; box-shadow:0 0 10px #00ffe7; outline:none; }
+  button { width:100%; padding:12px; font-size:16px; color:#fff; background:linear-gradient(90deg,#00ffe7,#006eff);
+           border:none; border-radius:8px; cursor:pointer; box-shadow:0 0 20px #00ffe7;
+           transition:transform 0.3s, box-shadow 0.3s; position:relative; overflow:hidden; }
+  button:hover { transform:scale(1.05); box-shadow:0 0 30px #00ffe7; }
+  .scan { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+          background:rgba(255,255,255,0.2); transform:skewX(-20deg); transition:all .5s ease; }
+  button.scan-animation .scan { left:200%; transition:all .5s ease; }
+  .icon { font-size:2em; margin-bottom:10px; filter:drop-shadow(0 0 10px #00ffe7); animation:spin 10s linear infinite; }
+  @keyframes spin { 0%{transform:rotateY(0)} 100%{transform:rotateY(360deg);} }
+  .status { margin-top:20px; color:#00ffe7; text-shadow:0 0 10px #00ffe7; }
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+
+<div class="scene" id="loginScene">
+  <div class="card" id="loginCard">
+    <h1>⚜️ AIMLOCK SUPPER VHAIDANG ULTIMATE ⚜️</h1>
+    <div class="icon">🔐</div>
+    <input id="keyInput" type="password" placeholder="🔑 Nhập key để đăng nhập">
+    <button onclick="doLogin(this)">
+      <span class="scan"></span>
+      🚪 Đăng nhập
+    </button>
+    <div class="status" id="loginStatus"></div>
+  </div>
+</div>
+
+<div class="scene hide" id="uploadScene">
+  <div class="card" id="uploadCard">
+    <h1>⚜️ TẢI FILE KÍCH HOẠT ⚜️</h1>
+    <div class="icon">📁</div>
+    <input id="fileInput" type="file">
+    <button onclick="doActivate(this)">
+      <span class="scan"></span>
+      ⚡ Kích hoạt
+    </button>
+    <div class="status" id="uploadStatus"></div>
+  </div>
+</div>
+
+<audio id="rainAudio" loop src="https://cdn.jsdelivr.net/gh/freeCodeCamp/cdn@main/drums/everybody_shout.mp3"></audio>
+<audio id="clickAudio" src="https://freesound.org/data/previews/256/256113_3263906-lq.mp3"></audio>
+
+<script>
+  const canvas = document.getElementById('rain');
+  const ctx = canvas.getContext('2d');
+  let w, h, drops=[];
+  function init() {
+    w=canvas.width=window.innerWidth;
+    h=canvas.height=window.innerHeight;
+    drops=[]; for(let i=0;i<400;i++){
+      drops.push({x:Math.random()*w,y:Math.random()*h,length:Math.random()*20+20,speed:Math.random()*4+4});
+    }
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='#00ffe7'; ctx.lineWidth=1.5;
+    drops.forEach(d=>{
+      ctx.beginPath(); ctx.moveTo(d.x,d.y); ctx.lineTo(d.x,d.y+d.length); ctx.stroke();
+      d.y+=d.speed;
+      if(d.y>h){d.y=-20; d.x=Math.random()*w;}
+    });
+    requestAnimationFrame(draw);
+  }
+  window.onresize=init;
+  init(); draw();
+
+  setTimeout(()=>document.getElementById('rainAudio').volume=0.3,100);
+  document.getElementById('rainAudio').play().catch(()=>{});
+
+  function doLogin(btn){
+    document.getElementById('clickAudio').play();
+    btn.classList.add('scan-animation');
+    setTimeout(()=>{
+      btn.classList.remove('scan-animation');
+      const key=document.getElementById('keyInput').value;
+      if(key==='VHAIDANG2025'){
+        document.getElementById('loginStatus').innerText='✅ Đăng nhập thành công!';
+        transitionScenes('loginScene','uploadScene');
+      } else {
+        alert('❌ Sai Key!');
+      }
+    },600);
+  }
+
+  function doActivate(btn){
+    document.getElementById('clickAudio').play();
+    btn.classList.add('scan-animation');
+    setTimeout(()=>{
+      btn.classList.remove('scan-animation');
+      if(document.getElementById('fileInput').files.length>0){
+        document.getElementById('uploadStatus').innerText='✅ KÍCH HOẠT THÀNH CÔNG - CHÀO MỪNG ĐẾN VỚI AIMLOCK GODZONE';
+      } else {
+        alert('⚠️ Vui lòng chọn tệp!');
+      }
+    },600);
+  }
+
+  function transitionScenes(fromId,toId){
+    const f=document.getElementById(fromId), t=document.getElementById(toId);
+    f.firstElementChild.classList.add('hide');
+    setTimeout(()=>{
+      f.classList.add('hide');
+      t.classList.remove('hide');
+    },600);
+  }
+</script>
+</body>
+</html>
